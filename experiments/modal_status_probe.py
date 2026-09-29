@@ -9,11 +9,14 @@ import modal
 app = modal.App("vl-jev-training-status-probe")
 training = modal.Volume.from_name("vl-jev-general-v1-training")
 dataset = modal.Volume.from_name("vl-jev-general-v1-data")
+ucf_data = modal.Volume.from_name("vl-jev-ucf101-full-data")
+ucf_media = modal.Volume.from_name("vl-jev-ucf101-full-media")
 
 
 @app.function(
     image=modal.Image.debian_slim(python_version="3.11"),
-    volumes={"/training": training, "/dataset": dataset},
+    volumes={"/training": training, "/dataset": dataset,
+             "/ucf-data": ucf_data, "/ucf-media": ucf_media},
     timeout=300,
 )
 def inspect():
@@ -42,6 +45,18 @@ def inspect():
                 "calibration": {k: v for k, v in result["calibration"]["metrics"].items()
                                 if k in ("overall", "vision", "vision_macro", "text")},
             })
+    missing = []
+    manifest = Path("/ucf-data/ucf101_full_v1/calibration.jsonl")
+    if manifest.is_file():
+        for line in manifest.open():
+            row = json.loads(line)
+            folder = Path("/ucf-media/calibration") / row["id"]
+            if not (folder / "row.json").is_file() or not (folder / "media.avi").is_file():
+                missing.append({"id": row["id"], "source_path": row["media"]["path"],
+                                "folder_exists": folder.is_dir(),
+                                "record_exists": (folder / "row.json").is_file(),
+                                "video_exists": (folder / "media.avi").is_file()})
+    output["missing_ucf_calibration"] = missing
     return output
 
 

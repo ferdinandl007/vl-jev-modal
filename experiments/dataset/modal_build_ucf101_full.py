@@ -372,6 +372,49 @@ def materialize_all():
     return dict(stats)
 
 
+@app.function(image=image, volumes={"/ucf-data": data_volume, "/ucf-media": media_volume},
+              timeout=1800)
+def repair_orphaned_records():
+    """Validate videos left by an interrupted extraction and restore metadata."""
+    import hashlib
+    import subprocess
+    from pathlib import Path
+
+    root = Path("/ucf-data/ucf101_full_v1")
+    repaired = []
+    for split in ("train", "dev", "calibration", "test"):
+        for line in (root / f"{split}.jsonl").open():
+            row = json.loads(line)
+            folder = Path("/ucf-media") / split / row["id"]
+            target = folder / "media.avi"
+            record = folder / "row.json"
+            if record.is_file() or not target.is_file():
+                continue
+            probe = subprocess.run(
+                ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                 "-of", "default=noprint_wrappers=1:nokey=1", str(target)],
+                check=True, capture_output=True, text=True, timeout=60)
+            duration = float(probe.stdout.strip())
+            if duration <= 0:
+                raise ValueError(f"Invalid duration for {row['id']}")
+            subprocess.run(["ffmpeg", "-v", "error", "-xerror", "-i", str(target),
+                            "-f", "null", "-"], check=True, capture_output=True,
+                           text=True, timeout=180)
+            digest = hashlib.sha256()
+            with target.open("rb") as source:
+                for chunk in iter(lambda: source.read(4 * 1024 * 1024), b""):
+                    digest.update(chunk)
+            meta = {**row, "materialized_media": [{
+                "path": "media.avi", "duration_seconds": duration,
+                "bytes": target.stat().st_size, "sha256": digest.hexdigest()}]}
+            record.write_text(json.dumps(meta, ensure_ascii=False, indent=2))
+            repaired.append({"id": row["id"], "split": split,
+                             "bytes": target.stat().st_size,
+                             "sha256": digest.hexdigest()})
+            media_volume.commit()
+    return {"repaired": repaired, "count": len(repaired)}
+
+
 @app.function(image=image, volumes={"/ucf-data": data_volume, "/ucf-media": media_volume}, timeout=1800)
 def status():
     import hashlib
@@ -430,7 +473,9 @@ def main(mode: str = "inspect"):
         print(json.dumps(smoke_media.remote(), indent=2, ensure_ascii=False))
     elif mode == "materialize":
         print(json.dumps(materialize_all.remote(), indent=2, ensure_ascii=False))
+    elif mode == "repair-orphaned-records":
+        print(json.dumps(repair_orphaned_records.remote(), indent=2, ensure_ascii=False))
     elif mode == "status":
         print(json.dumps(status.remote(), indent=2, ensure_ascii=False))
     else:
-        raise ValueError("mode must be inspect, build, smoke, materialize, or status")
+        raise ValueError("mode must be inspect, build, smoke, materialize, repair-orphaned-records, or status")

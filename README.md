@@ -6,19 +6,19 @@ This repository contains **code and documentation only**. It contains no model w
 
 ## Current result
 
-The `general-head-v1` run trained the 256-slot Jev-Omni decision head with a **frozen multimodal backbone**. Model code and weights were fetched on Modal from [`akhilaaa3/Jev-Omni`](https://huggingface.co/akhilaaa3/Jev-Omni) at revision `5addda86ddee081a68fb067477ea100c221b8917`. This is supervised head training, not full-backbone fine-tuning or a new pretrained VLM.
+The `general-head-v2` run finished on Modal on 2026-09-30. It trained the 256-slot Jev-Omni decision head on 47,680 mixed training examples, including 6,787 videos, with a **frozen multimodal backbone**. Model code and weights were fetched on Modal from [`akhilaaa3/Jev-Omni`](https://huggingface.co/akhilaaa3/Jev-Omni) at revision `5addda86ddee081a68fb067477ea100c221b8917`. This is supervised head training, not full-backbone fine-tuning or a new pretrained VLM.
 
-| Held-out v1 test set | Correct / total | Accuracy |
+| Held-out v2 test set | Correct / total | Accuracy |
 | --- | ---: | ---: |
-| All decisions | 4,449 / 5,124 | 86.83% |
-| Vision decisions | 2,148 / 2,594 | 82.81% |
-| Image decisions | 1,836 / 2,201 | 83.42% |
-| Video decisions | 207 / 248 | 83.47% |
-| Text decisions | 2,301 / 2,530 | 90.95% |
+| All decisions | 7,983 / 9,284 | 85.99% |
+| Vision decisions | 5,677 / 6,754 | 84.05% |
+| Image decisions | 2,361 / 2,827 | 83.52% |
+| Video decisions | 3,214 / 3,782 | 84.98% |
+| Text decisions | 2,306 / 2,530 | 91.15% |
 
-The vision result is **below the 83% target** for all vision tasks. The equal-family vision average is 73.01%, and GUI next-click accuracy is 33.93% (38/112). The separate calibration split was substantially harder (64.29% vision, 153/238); do not interpret the test number as general-purpose visual competence. These are within-dataset closed-choice results, not a comparison to JevBench, MVBench, GPT models, or a deployed system. The saved checkpoint is in the owner's Modal Volume and is not published here.
+The pooled vision result exceeds the 83% target. The equal-family vision average is only **72.96%**, however, and GUI next-click accuracy is **30.36%** (34/112). This test mix is dominated by available labeled datasets and does not establish 83% on every visual task or real-world inputs. The text-retention guard passed on development data. These are within-dataset closed-choice results, not a comparison to JevBench, MVBench, GPT models, or a deployed system. The selected `uniform` checkpoint has SHA-256 `e7771cb40f7cc41b5847e2a4880fb498572c86128c5d20cd0cce4f880211f780`; it remains in the owner's Modal Volume and is not published here.
 
-The broader `v2` dataset adds full UCF101 and labeled human-action images. Its merge and subsequent training are work in progress; this repository makes no v2 accuracy claim.
+The earlier `general-head-v1` run trained on 31,112 examples and scored 82.81% vision (2,148/2,594) and 90.95% text (2,301/2,530) on its held-out test set. The v2 test composition differs substantially, so the two pooled vision percentages are not a like-for-like measure of improvement.
 
 ## Repository map
 

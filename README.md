@@ -16,9 +16,20 @@ The `general-head-v2` run finished on Modal on 2026-09-30. It trained the 256-sl
 | Video decisions | 3,214 / 3,782 | 84.98% |
 | Text decisions | 2,306 / 2,530 | 91.15% |
 
-The pooled vision result exceeds the 83% target. The equal-family vision average is only **72.96%**, however, and GUI next-click accuracy is **30.36%** (34/112). This test mix is dominated by available labeled datasets and does not establish 83% on every visual task or real-world inputs. The text-retention guard passed on development data. These are within-dataset closed-choice results, not a comparison to JevBench, MVBench, GPT models, or a deployed system. The selected `uniform` checkpoint has SHA-256 `e7771cb40f7cc41b5847e2a4880fb498572c86128c5d20cd0cce4f880211f780`; it remains in the owner's Modal Volume and is not published here.
+The pooled vision result exceeds the 83% target. The equal-family vision average is only **72.96%**, however, and GUI next-click accuracy is **30.36%** (34/112). This test mix is dominated by available labeled datasets and does not establish 83% on every visual task or real-world inputs. The text-retention guard passed on development data. These are within-dataset closed-choice results, not a comparison to JevBench, MVBench, GPT models, or a deployed system. The selected `uniform` checkpoint has SHA-256 `e7771cb40f7cc41b5847e2a4880fb498572c86128c5d20cd0cce4f880211f780` and is [published as a separate head on Hugging Face](https://huggingface.co/ferdinandl007/jev-omni-general-head-v2).
 
 The earlier `general-head-v1` run trained on 31,112 examples and scored 82.81% vision (2,148/2,594) and 90.95% text (2,301/2,530) on its held-out test set. The v2 test composition differs substantially, so the two pooled vision percentages are not a like-for-like measure of improvement.
+
+## Public checkpoint
+
+The [Hugging Face model repository](https://huggingface.co/ferdinandl007/jev-omni-general-head-v2/tree/c2ec13a9db0150333eb50d76dac2d63343d748b6) contains the 3.97 MB head checkpoint, loading instructions, configuration, and detailed metrics. It omits the frozen 12B backbone and all training media. An anonymous readback from Modal matched the original checkpoint hash. To rerun the held-out scoring from that public file and the Modal feature cache:
+
+```sh
+modal run -m experiments.modal_verify_published_head --split test \
+  --revision c2ec13a9db0150333eb50d76dac2d63343d748b6
+```
+
+The training scripts and dataset builders below allow rebuilding the feature cache from pinned upstream sources in your own Modal workspace, subject to each source's access and usage terms.
 
 ## Repository map
 

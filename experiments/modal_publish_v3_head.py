@@ -28,7 +28,9 @@ def prepare_release(source_commit: str):
     report = json.loads((root / "report.json").read_text())
     gui_test = json.loads((root / "official-test-task.json").read_text())
     retention = json.loads((root / "retention-test.json").read_text())
-    checkpoint = Path(report["checkpoint"])
+    if report["checkpoint"] != f"/general-runs/{RUN}/head-uniform.pt":
+        raise ValueError("Unexpected checkpoint path in training report")
+    checkpoint = root / "head-uniform.pt"
     digest = hashlib.sha256(checkpoint.read_bytes()).hexdigest()
     if (digest != report["checkpoint_sha256"] or
             report["selected_epoch"] < 1 or

@@ -72,6 +72,8 @@ The v3 development score is a four-candidate conditional decision score. It does
 
 The Modal run trained on **55,642** examples: all 47,680 v2 examples plus 7,962 new GUI examples. Epoch 3 passed the general text/vision development guard and was selected. Its checkpoint SHA-256 is `f1f2b4ba26776198bf0cf716f38159419fb2ba35a881943237de11624182f3e9` in `vl-jev-general-v1-training:/general-head-v3-gui/head-uniform.pt`.
 
+The checkpoint, model card, configuration, and complete metric summaries are [published at `ferdinandl007/jev-omni-general-head-v3`](https://huggingface.co/ferdinandl007/jev-omni-general-head-v3/tree/10e061b811f4add247dc0cbf06a67cb5c0233ad8). An anonymous Modal readback matched the checkpoint SHA-256.
+
 | Decision set | v2 head | v3 head |
 | --- | ---: | ---: |
 | Task-separated GUI development, both sources | 1,652/2,108 (78.37%) | 1,665/2,108 (78.98%) |

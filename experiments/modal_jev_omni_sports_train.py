@@ -302,6 +302,28 @@ def _general_feature(torch, classifier, package, row):
     media = row.get("media") or {}
     if modality == "text":
         images = []
+    elif media.get("kind") == "modal_media_sequence":
+        assets = media["assets"]
+        if not assets:
+            raise ValueError(f"Empty media sequence for {row['id']}")
+        if len(assets) > 16:
+            assets = [assets[round(index * (len(assets) - 1) / 15)]
+                      for index in range(16)]
+        images = []
+        frame_budget = max(1, 16 // len(assets))
+        for asset in assets:
+            path = Path(asset["path"])
+            if not path.is_file():
+                raise FileNotFoundError(path)
+            if asset["kind"] == "image":
+                images.append(Image.open(path).convert("RGB"))
+            elif asset["kind"] == "video":
+                images.extend(Image.fromarray(frame).convert("RGB")
+                              if not isinstance(frame, Image.Image) else frame
+                              for frame in package._video_frames(str(path), frame_budget))
+            else:
+                raise ValueError(f"Unsupported media asset: {asset['kind']}")
+        images = images[:16]
     elif media.get("kind") == "modal_image":
         path = Path(media["path"])
         if not path.is_file():

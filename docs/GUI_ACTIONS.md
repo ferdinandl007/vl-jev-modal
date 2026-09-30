@@ -59,6 +59,7 @@ The v3 run retains the same Jev-Omni backbone and `_Head256` architecture. It st
 python3 -m modal run --detach -m experiments.dataset.modal_build_mind2web_general
 python3 -m modal run --detach -m experiments.dataset.modal_build_ax_actions_general
 python3 -m modal run --detach -m experiments.modal_general_v3_gui
+python3 -m modal run -m experiments.modal_general_v3_status
 ```
 
 The v3 development score is a four-candidate conditional decision score. It does not measure retrieval from every visible control or completed browser tasks. Compare the selected head on official untouched Mind2Web test splits and live BrowserGym tasks before making those claims. The existing 83% general vision target remains a separate guardrail.

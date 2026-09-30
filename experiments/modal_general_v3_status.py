@@ -15,6 +15,11 @@ general_training = modal.Volume.from_name("vl-jev-general-v1-training")
 def status():
     from pathlib import Path
 
+    def compact(metrics):
+        return {key: value for key, value in metrics.items()
+                if key in {"overall", "text", "vision", "vision_macro"} or
+                key.startswith("family:gui_")}
+
     root = Path("/general-runs/general-head-v3-gui")
     sources = {}
     for name, folder in (("mind2web", "mind2web_general_v1"),
@@ -31,15 +36,29 @@ def status():
             if test_path.is_file() else None,
             "feature_packs": {split: len(list((root / "features" / split).glob("pack-gui-*.pt")))
                               for split in ("train", "dev")},
-            "training": {key: report[key] for key in
+            "training": {**{key: report[key] for key in
                          ("selected_epoch", "train_rows", "gui_train_rows",
-                          "checkpoint_sha256")}
+                          "checkpoint_sha256")},
+                         "baseline_dev": {kind: compact(report["baseline_dev"][kind])
+                                          if kind in {"general", "gui"} else
+                                          report["baseline_dev"][kind]
+                                          for kind in ("general", "gui", "gui_source_macro")},
+                         "selected_dev": {kind: compact(report["selected_dev"][kind])
+                                          if kind in {"general", "gui"} else
+                                          report["selected_dev"][kind]
+                                          for kind in ("general", "gui", "gui_source_macro")}}
             if report else None,
-            "official_gui_test": {name: json.loads(gui_test.read_text())[name]
-                                  for name in ("n", "v3_selected_epoch")}
+            "official_gui_test": {key: (compact(json.loads(gui_test.read_text())[key])
+                                         if key in {"baseline_v2", "selected_v3"}
+                                         else json.loads(gui_test.read_text())[key])
+                                  for key in ("n", "v3_selected_epoch",
+                                              "baseline_v2", "selected_v3")}
             if gui_test.is_file() else None,
-            "general_retention_test": {name: json.loads(retention.read_text())[name]
-                                       for name in ("n", "v3_selected_epoch")}
+            "general_retention_test": {key: (compact(json.loads(retention.read_text())[key])
+                                            if key in {"baseline_v2", "selected_v3"}
+                                            else json.loads(retention.read_text())[key])
+                                       for key in ("n", "v3_selected_epoch",
+                                                   "baseline_v2", "selected_v3")}
             if retention.is_file() else None}
 
 

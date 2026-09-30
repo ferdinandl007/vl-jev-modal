@@ -67,3 +67,17 @@ The v3 development score is a four-candidate conditional decision score. It does
 `experiments/dataset/modal_build_mind2web_test_task.py` separately builds a derived four-choice set from the **official test-task source split** in test-only Modal Volumes. It retained 1,086 decisions (916 CLICK, 113 TYPE, 57 SELECT) from 176 tasks. `experiments/modal_general_v3_gui_test.py` waits for v3 development selection before loading this set, checks task/action disjointness, and compares the published v2 head with the selected v3 head. This is an independent source split, but its derived four-choice accuracy is not the official Mind2Web leaderboard metric.
 
 `experiments/modal_general_v3_retention_test.py` separately scores v2 and selected v3 on the unchanged v2 general held-out test features. It reports text and vision accuracy by family, so the new GUI examples cannot be judged only by their own benchmark.
+
+### Completed v3 result
+
+The Modal run trained on **55,642** examples: all 47,680 v2 examples plus 7,962 new GUI examples. Epoch 3 passed the general text/vision development guard and was selected. Its checkpoint SHA-256 is `f1f2b4ba26776198bf0cf716f38159419fb2ba35a881943237de11624182f3e9` in `vl-jev-general-v1-training:/general-head-v3-gui/head-uniform.pt`.
+
+| Decision set | v2 head | v3 head |
+| --- | ---: | ---: |
+| Task-separated GUI development, both sources | 1,652/2,108 (78.37%) | 1,665/2,108 (78.98%) |
+| Mind2Web official test-task source, derived four-choice task | 851/1,086 (78.36%) | 853/1,086 (78.55%) |
+| Unchanged general test, all tasks | 7,983/9,284 (85.99%) | 8,051/9,284 (86.72%) |
+| Unchanged general test, vision | 5,677/6,754 (84.05%) | 5,749/6,754 (85.12%) |
+| Unchanged general test, text | 2,306/2,530 (91.15%) | 2,302/2,530 (90.99%) |
+
+On the independent Mind2Web derived test, CLICK was 720/916 to 723/916, TYPE 92/113 to 90/113, and SELECT 39/57 to 40/57. The net gain is **two examples**, which is not persuasive evidence of improved browser-use performance. On the old coordinate-click test, accuracy moved from 34/112 to 36/112; that task still has the intent and coordinate problems described above. The general vision result exceeds the 83% pooled vision target, but some families remain below it. Full metrics, including log loss and Brier score, remain in Modal at `/general-runs/general-head-v3-gui/` and can be inspected through the status script without downloading weights or media.

@@ -46,4 +46,19 @@ Measure four things separately:
 3. **Image contribution:** compare screenshot + element labels with element labels alone on the same examples. Also test marked screenshots when labels are ambiguous or missing.
 4. **Task success:** run the resulting agent in [BrowserGym](https://github.com/ServiceNow/BrowserGym), which exposes screenshots and accessibility trees, then report completed tasks and recovery after invalid or stale element IDs.
 
-Train a GUI action adapter on task + history + screenshot + control list, with explicit replay of the existing text, image, and video mix. Select on task-grouped development data; score the official Mind2Web and BrowserGym holdouts only after selection. The existing 83% general vision target remains a separate guardrail and should not be conflated with GUI action accuracy.
+## General-head v3 training mixture
+
+The v3 run retains the same Jev-Omni backbone and `_Head256` architecture. It starts from the published general v2 head, replays **all 47,680 v2 training examples**, and adds GUI decisions at their natural frequency. It does not create a GUI-only adapter or replace the text, image, or video training set.
+
+- [Multimodal Mind2Web](https://huggingface.co/datasets/osunlp/Multimodal-Mind2Web) contributes the full 27-shard **training** split. The builder retained 5,253 train and 1,211 dev decisions across 821 and 183 separate task groups. Across both splits, the retained set includes 5,424 CLICK, 714 TYPE, and 326 SELECT target-selection examples. Each has a named positive control, three distinct named negatives, a screenshot marked at all four candidate controls, task goal, and earlier actions. Task IDs determine the train/dev split. The action being predicted is excluded from the input. TYPE and SELECT examples identify the target control; they do not teach text-value generation or dropdown option content. The official Mind2Web test splits remain untouched during training and selection. The source is research-only under OpenRAIL.
+- [BrowserGym MiniWoB action-only trajectories](https://huggingface.co/datasets/saital/browser-agent-phase1-sft-action-only) contribute accessibility-tree observations and bid-addressed actions. The builder keeps rows with a named target and enough distinct named alternatives, and excludes fallback teacher actions. It makes four operation-plus-control choices per row. This is teacher-generated supervision, not a human-verified success oracle. The source is MIT licensed. The source validation split remains untouched. An initial Modal build retained 2,709 train and 897 task-separated development examples; all retained examples were clicks, with 13 train task groups and two dev task groups.
+
+`experiments/dataset/modal_build_mind2web_general.py` and `experiments/dataset/modal_build_ax_actions_general.py` build these sources only on Modal. `experiments/modal_general_v3_gui.py` extracts GUI features on H100s, then trains the same general head on GUI rows plus full v2 replay. Epoch selection uses GUI development accuracy averaged across the two GUI sources, requiring the v2 general text and vision development accuracies to stay within 1.5 percentage points and general log loss within 0.03. If no epoch passes and improves GUI accuracy, the v2 head remains selected. These thresholds are training gates, not test results.
+
+```bash
+python3 -m modal run --detach -m experiments.dataset.modal_build_mind2web_general
+python3 -m modal run --detach -m experiments.dataset.modal_build_ax_actions_general
+python3 -m modal run --detach -m experiments.modal_general_v3_gui
+```
+
+The v3 development score is a four-candidate conditional decision score. It does not measure retrieval from every visible control or completed browser tasks. Compare the selected head on official untouched Mind2Web test splits and live BrowserGym tasks before making those claims. The existing 83% general vision target remains a separate guardrail.

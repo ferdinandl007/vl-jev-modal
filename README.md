@@ -20,6 +20,10 @@ The pooled vision result exceeds the 83% target. The equal-family vision average
 
 The earlier `general-head-v1` run trained on 31,112 examples and scored 82.81% vision (2,148/2,594) and 90.95% text (2,301/2,530) on its held-out test set. The v2 test composition differs substantially, so the two pooled vision percentages are not a like-for-like measure of improvement.
 
+The [general-head v3 GUI mixture](docs/GUI_ACTIONS.md#general-head-v3-training-mixture) adds labeled web-control and accessibility-tree actions to **full v2 replay**. It retrains the same general-purpose head and selects on task-separated GUI development data with guards for existing text and vision performance. The Modal data build and training pipeline run independently of the submitting laptop. V3 scores must be read from its completed training report; the v2 results above remain the latest published held-out general scores until then.
+
+The classifier head scores supplied options. [`experiments/typed_decisions.py`](experiments/typed_decisions.py) maps those scores to **Choice, Noul, and Score** answers for multiple named questions, including Choice distributions and Score legends/expected levels. The adapter runs one classifier call per question. It is a Python adapter, not a deployed HTTP endpoint or an exact copy of TypeSafe's wire protocol. Its probabilities and concentration-based confidence are raw head outputs; the v3 run does not establish calibration. A structural smoke runs on Modal with `python3 -m modal run -m experiments.modal_typed_decisions_smoke`.
+
 ## Public checkpoint
 
 The [Hugging Face model repository](https://huggingface.co/ferdinandl007/jev-omni-general-head-v2/tree/c2ec13a9db0150333eb50d76dac2d63343d748b6) contains the 3.97 MB head checkpoint, loading instructions, configuration, and detailed metrics. It omits the frozen 12B backbone and all training media. An anonymous readback from Modal matched the original checkpoint hash. To rerun the held-out scoring from that public file and the Modal feature cache:

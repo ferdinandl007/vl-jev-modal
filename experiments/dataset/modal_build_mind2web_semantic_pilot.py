@@ -41,13 +41,14 @@ def _candidate(item, nodes):
             "box": (left, top, width, height)}
 
 
-def _make_row(source, width, height):
+def _make_row(source, width, height, shard=SHARD, allowed_operations=("CLICK",)):
     import hashlib
     from bs4 import BeautifulSoup
 
     operation = json.loads(source["operation"])
-    if operation.get("op") != "CLICK" or operation.get("original_op") != "CLICK":
-        return None, "non_click"
+    op = operation.get("original_op")
+    if operation.get("op") != op or op not in allowed_operations:
+        return None, "unsupported_operation"
     html = BeautifulSoup(source["cleaned_html"], "html.parser")
     nodes = {str(node.get("backend_node_id")): node
              for node in html.find_all(attrs={"backend_node_id": True})}
@@ -95,14 +96,17 @@ def _make_row(source, width, height):
     task_id = source["annotation_id"]
     split = "dev" if int(hashlib.sha256(task_id.encode()).hexdigest()[:8], 16) % 5 == 0 else "train"
     row = {"id": source["action_uid"], "split": split, "modality": "image",
-           "task_family": "gui_named_control_next_click",
+           "task_family": ("gui_named_control_next_click" if op == "CLICK"
+                           else f"gui_named_control_next_{op.lower()}"),
            "source": {"repo": REPO, "revision": REVISION,
                       "row": source["action_uid"], "group": task_id,
-                      "shard": SHARD, "website": source["website"]},
+                      "shard": shard, "website": source["website"]},
            "state": "Goal: " + source["confirmed_task"] + "\nPrevious actions: " +
                     ("; ".join(prior) if prior else "none"),
            "question": {"type": "choice",
-                        "instructions": "Which available control should be clicked next?",
+                        "instructions": ("Which available control should be clicked next?"
+                                         if op == "CLICK" else
+                                         f"Which available control should receive the next {op.lower()} action?"),
                         "criteria": {label: f"{item['role']}: {item['name']}"
                                      for label, item in zip("ABCD", choices)}},
            "gold": {"key": key}, "label_quality": "human_annotated_action",

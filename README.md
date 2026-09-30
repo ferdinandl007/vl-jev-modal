@@ -6,6 +6,8 @@ This repository contains **code and documentation only**. It contains no model w
 
 ## Current result
 
+The [2026-09-30 unified-model and benchmark audit](docs/UNIFIED_RELEASE_AND_BENCHMARKS.md) records all admitted sources, screenshot overlap findings, the new 59,000-example visual-SoccerNet/GUI/general candidate, and the standard-source BLINK/TempCompass comparison protocol. Its external benchmark runs are separate from the historical internal scores below. The unified candidate matches v3's internal general test score at 8,051/9,284 (86.72%); that is not a standard benchmark ranking.
+
 The `general-head-v2` run finished on Modal on 2026-09-30. It trained the 256-slot Jev-Omni decision head on 47,680 mixed training examples, including 6,787 videos, with a **frozen multimodal backbone**. Model code and weights were fetched on Modal from [`akhilaaa3/Jev-Omni`](https://huggingface.co/akhilaaa3/Jev-Omni) at revision `5addda86ddee081a68fb067477ea100c221b8917`. This is supervised head training, not full-backbone fine-tuning or a new pretrained VLM.
 
 | Held-out v2 test set | Correct / total | Accuracy |
@@ -38,6 +40,12 @@ modal run -m experiments.modal_verify_published_head --split test \
 The training scripts and dataset builders below allow rebuilding the feature cache from pinned upstream sources in your own Modal workspace, subject to each source's access and usage terms.
 
 ## Repository map
+
+The [large text expansion](docs/TEXT_DECISION_DATASETS.md) freezes 117,330 new
+Choice/Noul/Score training decisions on Modal, including message-list routing,
+none-of-these cases, evidence sufficiency and human ordinal ratings. Public
+JevBench and Fast Decisions examples remain reserved diagnostics. A candidate
+trains with full 59,000-example v4 replay; it does not inherit v4 benchmark scores.
 
 - [`experiments/modal_jev_omni_sports_train.py`](experiments/modal_jev_omni_sports_train.py): frozen-feature extraction, decision-head training, dev selection, held-out evaluation, and checkpoint validation.
 - [`experiments/modal_general_v2_pipeline.py`](experiments/modal_general_v2_pipeline.py): detached Modal coordinator for v2 merge, packed feature extraction, training, and evaluation.

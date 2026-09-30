@@ -38,7 +38,7 @@ The training scripts and dataset builders below allow rebuilding the feature cac
 - [`experiments/dataset/`](experiments/dataset/): pinned source builders, media materializers, split checks, and dataset audits.
 - [`experiments/modal_status_probe.py`](experiments/modal_status_probe.py): compact read-only status from Modal Volumes.
 - Other `experiments/modal_*.py` files: model, decision-contract, and video probes.
-- [`docs/DATASET_PILOT.md`](docs/DATASET_PILOT.md), [`docs/CONFIDENCE.md`](docs/CONFIDENCE.md), and [`docs/TRAINING_AND_RL_PLAN.md`](docs/TRAINING_AND_RL_PLAN.md): dataset provenance and research plans. Plans are not claims of completed experiments.
+- [`docs/DATASET_PILOT.md`](docs/DATASET_PILOT.md), [`docs/CONFIDENCE.md`](docs/CONFIDENCE.md), [`docs/TRAINING_AND_RL_PLAN.md`](docs/TRAINING_AND_RL_PLAN.md), and [`docs/GUI_ACTIONS.md`](docs/GUI_ACTIONS.md): dataset provenance, confidence, training, and semantic GUI-action benchmarks. Plans are not claims of completed experiments.
 
 ## Run on Modal
 
@@ -59,6 +59,19 @@ modal run -m experiments.modal_status_probe
 ```
 
 The v2 coordinator expects the v1 general dataset, human-action dataset, and all 13,320 UCF101 videos to be materialized first. The individual builders in `experiments/dataset/` perform those steps; inspect their `main()` modes before launching a full build. `modal run --detach` keeps the remote function active after the submitting terminal disconnects. Do not use `modal volume get` if you want all artifacts to remain in Modal.
+
+## GUI control decisions
+
+The [GUI action study](docs/GUI_ACTIONS.md) replaces coordinate options with named controls and stable element IDs. Its diagnostic jobs and a task-grouped Multimodal Mind2Web pilot run entirely on Modal:
+
+```sh
+modal run -m experiments.modal_gui_diagnostics --mode semantic
+modal run -m experiments.modal_omniparser_recall --limit 40
+modal run --detach -m experiments.dataset.modal_build_mind2web_semantic_pilot
+modal run -m experiments.modal_mind2web_semantic_eval
+```
+
+Run the pilot evaluation after its builder finishes. The pilot uses one pinned training shard and a development split; it is not an official Mind2Web test score. Screenshots, parsed rows, and results remain in Modal Volumes.
 
 ## Data and model rights
 

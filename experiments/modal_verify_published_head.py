@@ -6,8 +6,8 @@ import json
 import modal
 
 from experiments.modal_jev_omni_sports_train import (
-    MODEL_ID, MODEL_REVISION, _general_metrics, _load_general_features, base_image,
-    general_data, general_training,
+    MODEL_ID, MODEL_REVISION, _general_metrics, _load_classifier,
+    _load_general_features, base_image, general_data, general_training, model_cache,
 )
 
 
@@ -58,6 +58,35 @@ def verify(split: str = "test", revision: str = "main"):
             "video": observed.get("modality:video"), "text": observed["text"]}
 
 
+@app.function(image=base_image, gpu="H100", timeout=3600,
+              volumes={"/model-cache": model_cache})
+def smoke_predict(revision: str = "main"):
+    from pathlib import Path
+    import torch
+    from huggingface_hub import hf_hub_download
+
+    torch, classifier, _package = _load_classifier()
+    checkpoint = hf_hub_download(HEAD_ID, "decision_head.pt", revision=revision)
+    digest = hashlib.sha256(Path(checkpoint).read_bytes()).hexdigest()
+    if digest != EXPECTED_SHA256:
+        raise ValueError("Published checkpoint hash mismatch")
+    classifier.head.load_state_dict(
+        torch.load(checkpoint, map_location=classifier.device, weights_only=True))
+    classifier.head.eval()
+    answer = classifier.predict(state="The match has started.",
+                                question="Has play begun?", options=["Yes", "No"])
+    if not isinstance(answer, dict):
+        raise ValueError("Published head did not produce a decision mapping")
+    return {"repo_id": HEAD_ID, "revision": revision,
+            "checkpoint_sha256": digest, "answer": answer}
+
+
 @app.local_entrypoint()
-def main(split: str = "test", revision: str = "main"):
-    print(json.dumps(verify.remote(split, revision), indent=2))
+def main(split: str = "test", revision: str = "main", mode: str = "verify"):
+    if mode == "verify":
+        result = verify.remote(split, revision)
+    elif mode == "smoke":
+        result = smoke_predict.remote(revision)
+    else:
+        raise ValueError("Choose verify or smoke")
+    print(json.dumps(result, indent=2))

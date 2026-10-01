@@ -81,6 +81,63 @@ result includes knowledge tasks and is not this unified checkpoint.
 
 ## External benchmark protocol
 
+### Completed measurements and release status
+
+The full pinned source splits completed with all 5,934 questions per full-scope
+model/representation run. The following results are **micro accuracy under
+the declared fast decision protocol**, not native-generation leaderboard scores.
+
+| Model, ordered frames | BLINK validation (1,901) | TempCompass MC (1,580) | TempCompass yes/no (2,453) |
+| --- | ---: | ---: | ---: |
+| Upstream Jev-Omni | 995 = 52.34% | 1,075 = 68.04% | 1,722 = 70.20% |
+| General v3 | 1,028 = 54.08% | 1,081 = 68.42% | 1,751 = 71.38% |
+| Unified v4 | 1,026 = 53.97% | 1,082 = 68.48% | 1,745 = 71.14% |
+| Google Gemma 4 12B IT | 1,162 = 61.13% | 1,065 = 67.41% | 1,773 = 72.28% |
+| Qwen3.5-4B | 1,196 = 62.91% | 1,055 = 66.77% | 1,751 = 71.38% |
+| Qwen3.5-9B | 1,253 = 65.91% | 1,132 = 71.65% | 1,842 = 75.09% |
+
+Decider-2B scored 481/793 = 60.66% on the eligible single-image BLINK subset.
+That is a different denominator from the full BLINK table; a direct ranking
+requires all models' scores on those same IDs. The paired comparison job did
+not finish with a verified result, so no bootstrap significance claim is made.
+
+| Unified v4 representation | TempCompass MC | TempCompass yes/no |
+| --- | ---: | ---: |
+| Sixteen ordered midpoint images | 1,082/1,580 = 68.48% | 1,745/2,453 = 71.14% |
+| Same images with actual timestamps | 1,094/1,580 = 69.24% | 1,742/2,453 = 71.02% |
+| Native video processor, sixteen frames / 70 soft tokens | 1,051/1,580 = 66.52% | 1,673/2,453 = 68.20% |
+
+Native video changes sampling/token budgets and includes redundant initial
+decoding in this harness. It did not improve this checkpoint's accuracy.
+An MP4 container itself does not add information. Original time/order should
+be retained for continuous sequences; separate camera views should not be
+assigned invented temporal continuity.
+
+Measured v4 median request latency was 111 ms on BLINK and about 1,102 ms
+on the sixteen-frame temporal tasks, including preprocessing and scoring.
+These do not establish single-digit-millisecond fresh-media decisions.
+The fully conditioned head is much cheaper, but changing the question or
+options requires a new backbone forward in the current implementation.
+
+On the pinned 231 public JevBench tasks, upstream/v3/v4 scored 197/206/205
+correct: 85.28% / 89.18% / 88.74% micro accuracy. V4's group macro was 86.67%;
+Choice 123/139, Noul 68/74, Score exact class 14/18. Original source scoring,
+label order and native typed prompts were used. This is not the current
+sealed composite, and the eighteen Score questions provide limited evidence.
+
+The full v4 package was prepared on Modal (23,919,549,408 bytes of backbone
+weights plus the selected head and adapter). **Public publication and anonymous
+complete-model verification have not completed.** Modal subsequently returned
+`ConflictError: workspace ... is disabled`; follow-up calls could not connect.
+The source scripts are public, but this document must not imply that the
+consolidated Hugging Face repository is already usable.
+
+The text expansion's 117,330 training examples and all feature packs completed.
+The subsequent 176,330-example candidate training has no verified completion
+report. It does not inherit v4's external scores. Restore Modal workspace
+access, then resume training, aggregation, paired analysis and publication
+from the saved artifacts. No local dataset/model fallback is authorized.
+
 `experiments/modal_official_benchmarks.py` materializes source labels and media
 from pinned revisions. Benchmark datasets are evaluation-only and have no
 synthetic labels. The initial complete standard-source suite is:

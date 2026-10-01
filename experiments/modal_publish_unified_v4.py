@@ -272,5 +272,6 @@ def status():
     from huggingface_hub import HfApi
     root=Path("/release/jev-omni-unified-v4")
     output={p.name:json.loads(p.read_text()) for p in root.glob("*.json") if p.name in {"publication.json","verification.json","publication-final.json"}}
+    output["prepared_files"]={p.name:p.stat().st_size for p in root.iterdir() if p.is_file()} if root.exists() else {}
     if HfApi(token=False).repo_exists(REPO):output["public_revision"]=HfApi(token=False).model_info(REPO).sha
     return output

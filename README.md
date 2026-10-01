@@ -4,6 +4,14 @@ Research code for typed decisions over text, images, image sequences, and video.
 
 This repository contains **code and documentation only**. It contains no model weights, checkpoints, extracted features, training examples, images, videos, or credentials. Those artifacts stay in Modal Volumes or at their original sources.
 
+## Benchmark snapshot
+
+![Glim 12B compared with Jev, Gemma and Qwen on matched benchmarks](docs/assets/benchmark-comparison.svg)
+
+![Glim 12B and Jev on 231 public JevBench tasks](docs/assets/jevbench-comparison.svg)
+
+**Glim 12B** is the published unified v4 checkpoint. Charts show measured results; the planned Qwen LoRA candidate has no verified score yet. See the [protocol, counts and limitations](docs/UNIFIED_RELEASE_AND_BENCHMARKS.md) before comparing these results with published leaderboards.
+
 ## Current result
 
 The completed fast-protocol comparison scored unified v4 at **53.97% BLINK,
@@ -14,10 +22,9 @@ The [Glim 12B model](https://huggingface.co/ferdinandl007/glim-12b)
 is public. Anonymous full-model loading and Choice/Noul/Score outputs were
 verified on Modal at revision `7a86292f3b72ea29b8a96d9332e4ef2011d0c8f3`.
 The 117,330-example text expansion and its features are saved on Modal;
-new candidate training resumed with explicit user authorization inside this
-month's remaining $30 free-credit allowance. Workspace usage is capped at $30
-and paid spend at $0. The single L4 training worker has a one-hour timeout;
-no new candidate benchmark or release is claimed yet.
+the next candidate is a Qwen3.5-9B LoRA pilot over text, images and temporal inputs.
+Workspace usage is capped at $30 and paid spend at $0.
+No new candidate benchmark or release is claimed yet.
 Full measurements and limits are in the audit linked below.
 
 The [2026-09-30 unified-model and benchmark audit](docs/UNIFIED_RELEASE_AND_BENCHMARKS.md) records all admitted sources, screenshot overlap findings, the new 59,000-example visual-SoccerNet/GUI/general candidate, and the standard-source BLINK/TempCompass comparison protocol. Its external benchmark runs are separate from the historical internal scores below. The unified candidate matches v3's internal general test score at 8,051/9,284 (86.72%); that is not a standard benchmark ranking.

@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1010" viewBox="0 0 1000 1010" role="img" aria-labelledby="title desc">
+<title id="title">Glim 12B vs. open multimodal models</title>
+<desc id="desc">Measured accuracy · same source splits and fast decision protocol · higher is better. H100 · BF16 · batch 1 · thinking off · video: 16 ordered frames. These are not leaderboard-generation scores.</desc>
+<rect width="1000" height="100%" fill="#101827"/>
+<g font-family="Arial,Helvetica,sans-serif">
+<text x="38" y="49" fill="#f8fafc" font-size="28" font-weight="700">Glim 12B vs. open multimodal models</text>
+<text x="38" y="80" fill="#cbd5e1" font-size="15">Measured accuracy · same source splits and fast decision protocol · higher is better</text>
+<text x="38" y="118" fill="#f8fafc" font-size="19" font-weight="700">BLINK · 1,901 validation questions</text>
+<line x1="245.0" x2="245.0" y1="134" y2="329" stroke="#293649"/>
+<text x="245.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">0%</text>
+<line x1="371.0" x2="371.0" y1="134" y2="329" stroke="#293649"/>
+<text x="371.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">20%</text>
+<line x1="497.0" x2="497.0" y1="134" y2="329" stroke="#293649"/>
+<text x="497.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">40%</text>
+<line x1="623.0" x2="623.0" y1="134" y2="329" stroke="#293649"/>
+<text x="623.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">60%</text>
+<line x1="749.0" x2="749.0" y1="134" y2="329" stroke="#293649"/>
+<text x="749.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">80%</text>
+<line x1="875.0" x2="875.0" y1="134" y2="329" stroke="#293649"/>
+<text x="875.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">100%</text>
+<text x="38" y="160" fill="#94a3b8" font-size="15">Upstream Jev-Omni</text>
+<rect x="245" y="144" width="329.75" height="22" rx="4" fill="#94a3b8"/>
+<text x="584.75" y="160" fill="#f8fafc" font-size="14">52.34%</text>
+<text x="38" y="191" fill="#94a3b8" font-size="15">General v3</text>
+<rect x="245" y="175" width="340.68" height="22" rx="4" fill="#94a3b8"/>
+<text x="595.68" y="191" fill="#f8fafc" font-size="14">54.08%</text>
+<text x="38" y="222" fill="#2dd4bf" font-size="15">Glim 12B · v4</text>
+<rect x="245" y="206" width="340.02" height="22" rx="4" fill="#2dd4bf"/>
+<text x="595.02" y="222" fill="#f8fafc" font-size="14">53.97%</text>
+<text x="38" y="253" fill="#94a3b8" font-size="15">Gemma 4 12B IT</text>
+<rect x="245" y="237" width="385.09" height="22" rx="4" fill="#94a3b8"/>
+<text x="640.09" y="253" fill="#f8fafc" font-size="14">61.13%</text>
+<text x="38" y="284" fill="#94a3b8" font-size="15">Qwen3.5-4B</text>
+<rect x="245" y="268" width="396.36" height="22" rx="4" fill="#94a3b8"/>
+<text x="651.36" y="284" fill="#f8fafc" font-size="14">62.91%</text>
+<text x="38" y="315" fill="#94a3b8" font-size="15">Qwen3.5-9B</text>
+<rect x="245" y="299" width="415.25" height="22" rx="4" fill="#94a3b8"/>
+<text x="670.25" y="315" fill="#f8fafc" font-size="14">65.91%</text>
+<text x="38" y="388" fill="#f8fafc" font-size="19" font-weight="700">TempCompass multiple choice · 1,580 questions</text>
+<line x1="245.0" x2="245.0" y1="404" y2="599" stroke="#293649"/>
+<text x="245.0" y="620" text-anchor="middle" fill="#94a3b8" font-size="12">0%</text>
+<line x1="371.0" x2="371.0" y1="404" y2="599" stroke="#293649"/>
+<text x="371.0" y="620" text-anchor="middle" fill="#94a3b8" font-size="12">20%</text>
+<line x1="497.0" x2="497.0" y1="404" y2="599" stroke="#293649"/>
+<text x="497.0" y="620" text-anchor="middle" fill="#94a3b8" font-size="12">40%</text>
+<line x1="623.0" x2="623.0" y1="404" y2="599" stroke="#293649"/>
+<text x="623.0" y="620" text-anchor="middle" fill="#94a3b8" font-size="12">60%</text>
+<line x1="749.0" x2="749.0" y1="404" y2="599" stroke="#293649"/>
+<text x="749.0" y="620" text-anchor="middle" fill="#94a3b8" font-size="12">80%</text>
+<line x1="875.0" x2="875.0" y1="404" y2="599" stroke="#293649"/>
+<text x="875.0" y="620" text-anchor="middle" fill="#94a3b8" font-size="12">100%</text>
+<text x="38" y="430" fill="#94a3b8" font-size="15">Upstream Jev-Omni</text>
+<rect x="245" y="414" width="428.64" height="22" rx="4" fill="#94a3b8"/>
+<text x="683.64" y="430" fill="#f8fafc" font-size="14">68.04%</text>
+<text x="38" y="461" fill="#94a3b8" font-size="15">General v3</text>
+<rect x="245" y="445" width="431.03" height="22" rx="4" fill="#94a3b8"/>
+<text x="686.03" y="461" fill="#f8fafc" font-size="14">68.42%</text>
+<text x="38" y="492" fill="#2dd4bf" font-size="15">Glim 12B · v4</text>
+<rect x="245" y="476" width="431.43" height="22" rx="4" fill="#2dd4bf"/>
+<text x="686.43" y="492" fill="#f8fafc" font-size="14">68.48%</text>
+<text x="38" y="523" fill="#94a3b8" font-size="15">Gemma 4 12B IT</text>
+<rect x="245" y="507" width="424.65" height="22" rx="4" fill="#94a3b8"/>
+<text x="679.65" y="523" fill="#f8fafc" font-size="14">67.41%</text>
+<text x="38" y="554" fill="#94a3b8" font-size="15">Qwen3.5-4B</text>
+<rect x="245" y="538" width="420.66" height="22" rx="4" fill="#94a3b8"/>
+<text x="675.66" y="554" fill="#f8fafc" font-size="14">66.77%</text>
+<text x="38" y="585" fill="#94a3b8" font-size="15">Qwen3.5-9B</text>
+<rect x="245" y="569" width="451.37" height="22" rx="4" fill="#94a3b8"/>
+<text x="706.37" y="585" fill="#f8fafc" font-size="14">71.65%</text>
+<text x="38" y="658" fill="#f8fafc" font-size="19" font-weight="700">TempCompass yes/no · 2,453 questions</text>
+<line x1="245.0" x2="245.0" y1="674" y2="869" stroke="#293649"/>
+<text x="245.0" y="890" text-anchor="middle" fill="#94a3b8" font-size="12">0%</text>
+<line x1="371.0" x2="371.0" y1="674" y2="869" stroke="#293649"/>
+<text x="371.0" y="890" text-anchor="middle" fill="#94a3b8" font-size="12">20%</text>
+<line x1="497.0" x2="497.0" y1="674" y2="869" stroke="#293649"/>
+<text x="497.0" y="890" text-anchor="middle" fill="#94a3b8" font-size="12">40%</text>
+<line x1="623.0" x2="623.0" y1="674" y2="869" stroke="#293649"/>
+<text x="623.0" y="890" text-anchor="middle" fill="#94a3b8" font-size="12">60%</text>
+<line x1="749.0" x2="749.0" y1="674" y2="869" stroke="#293649"/>
+<text x="749.0" y="890" text-anchor="middle" fill="#94a3b8" font-size="12">80%</text>
+<line x1="875.0" x2="875.0" y1="674" y2="869" stroke="#293649"/>
+<text x="875.0" y="890" text-anchor="middle" fill="#94a3b8" font-size="12">100%</text>
+<text x="38" y="700" fill="#94a3b8" font-size="15">Upstream Jev-Omni</text>
+<rect x="245" y="684" width="442.26" height="22" rx="4" fill="#94a3b8"/>
+<text x="697.26" y="700" fill="#f8fafc" font-size="14">70.20%</text>
+<text x="38" y="731" fill="#94a3b8" font-size="15">General v3</text>
+<rect x="245" y="715" width="449.71" height="22" rx="4" fill="#94a3b8"/>
+<text x="704.71" y="731" fill="#f8fafc" font-size="14">71.38%</text>
+<text x="38" y="762" fill="#2dd4bf" font-size="15">Glim 12B · v4</text>
+<rect x="245" y="746" width="448.17" height="22" rx="4" fill="#2dd4bf"/>
+<text x="703.17" y="762" fill="#f8fafc" font-size="14">71.14%</text>
+<text x="38" y="793" fill="#94a3b8" font-size="15">Gemma 4 12B IT</text>
+<rect x="245" y="777" width="455.36" height="22" rx="4" fill="#94a3b8"/>
+<text x="710.36" y="793" fill="#f8fafc" font-size="14">72.28%</text>
+<text x="38" y="824" fill="#94a3b8" font-size="15">Qwen3.5-4B</text>
+<rect x="245" y="808" width="449.71" height="22" rx="4" fill="#94a3b8"/>
+<text x="704.71" y="824" fill="#f8fafc" font-size="14">71.38%</text>
+<text x="38" y="855" fill="#94a3b8" font-size="15">Qwen3.5-9B</text>
+<rect x="245" y="839" width="473.08" height="22" rx="4" fill="#94a3b8"/>
+<text x="728.08" y="855" fill="#f8fafc" font-size="14">75.09%</text>
+<text x="38" y="981" fill="#cbd5e1" font-size="13">H100 · BF16 · batch 1 · thinking off · video: 16 ordered frames. These are not leaderboard-generation scores.</text>
+</g></svg>

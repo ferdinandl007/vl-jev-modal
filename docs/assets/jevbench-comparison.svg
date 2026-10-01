@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="470" viewBox="0 0 1000 470" role="img" aria-labelledby="title desc">
+<title id="title">Public JevBench · decision accuracy</title>
+<desc id="desc">231 public tasks · micro accuracy · separate scope from BLINK and TempCompass. Public task revision bb05a335 · Glim: 205/231. This does not establish a rank on the current sealed benchmark.</desc>
+<rect width="1000" height="100%" fill="#101827"/>
+<g font-family="Arial,Helvetica,sans-serif">
+<text x="38" y="49" fill="#f8fafc" font-size="28" font-weight="700">Public JevBench · decision accuracy</text>
+<text x="38" y="80" fill="#cbd5e1" font-size="15">231 public tasks · micro accuracy · separate scope from BLINK and TempCompass</text>
+<text x="38" y="118" fill="#f8fafc" font-size="19" font-weight="700">Original public JevBench tasks</text>
+<line x1="245.0" x2="245.0" y1="134" y2="329" stroke="#293649"/>
+<text x="245.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">0%</text>
+<line x1="371.0" x2="371.0" y1="134" y2="329" stroke="#293649"/>
+<text x="371.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">20%</text>
+<line x1="497.0" x2="497.0" y1="134" y2="329" stroke="#293649"/>
+<text x="497.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">40%</text>
+<line x1="623.0" x2="623.0" y1="134" y2="329" stroke="#293649"/>
+<text x="623.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">60%</text>
+<line x1="749.0" x2="749.0" y1="134" y2="329" stroke="#293649"/>
+<text x="749.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">80%</text>
+<line x1="875.0" x2="875.0" y1="134" y2="329" stroke="#293649"/>
+<text x="875.0" y="350" text-anchor="middle" fill="#94a3b8" font-size="12">100%</text>
+<text x="38" y="160" fill="#94a3b8" font-size="15">Upstream Jev-Omni</text>
+<rect x="245" y="144" width="537.27" height="22" rx="4" fill="#94a3b8"/>
+<text x="792.27" y="160" fill="#f8fafc" font-size="14">85.28%</text>
+<text x="38" y="191" fill="#94a3b8" font-size="15">General v3</text>
+<rect x="245" y="175" width="561.82" height="22" rx="4" fill="#94a3b8"/>
+<text x="816.82" y="191" fill="#f8fafc" font-size="14">89.18%</text>
+<text x="38" y="222" fill="#2dd4bf" font-size="15">Glim 12B · v4</text>
+<rect x="245" y="206" width="559.09" height="22" rx="4" fill="#2dd4bf"/>
+<text x="814.09" y="222" fill="#f8fafc" font-size="14">88.74%</text>
+<text x="38" y="441" fill="#cbd5e1" font-size="13">Public task revision bb05a335 · Glim: 205/231. This does not establish a rank on the current sealed benchmark.</text>
+</g></svg>

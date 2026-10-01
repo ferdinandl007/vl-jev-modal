@@ -125,12 +125,16 @@ Choice 123/139, Noul 68/74, Score exact class 14/18. Original source scoring,
 label order and native typed prompts were used. This is not the current
 sealed composite, and the eighteen Score questions provide limited evidence.
 
-The full v4 package was prepared on Modal (23,919,549,408 bytes of backbone
-weights plus the selected head and adapter). **Public publication and anonymous
-complete-model verification have not completed.** Modal subsequently returned
-`ConflictError: workspace ... is disabled`; follow-up calls could not connect.
-Modal access subsequently recovered, aggregation and paired analysis completed,
-and publication resumed. Anonymous complete-model verification is still pending.
+The [complete unified v4 package](https://huggingface.co/ferdinandl007/jev-omni-unified-v4)
+is public, containing 23,919,549,408 bytes of backbone weights plus the
+selected head and typed adapter. Anonymous complete-model loading and all
+three typed output structures were verified on Modal at revision
+`7a86292f3b72ea29b8a96d9332e4ef2011d0c8f3`. Head SHA-256:
+`e0bfd32690d4656238e29e402b01772ca93e97602c12875b84f61793eef169c6`.
+A temporary Modal workspace-disabled error interrupted the run; access
+recovered, aggregation and paired analysis completed, and publication plus
+anonymous verification succeeded. This release contains v4 training;
+it does not yet include the 117,330-example text expansion.
 
 The text expansion's 117,330 training examples and all feature packs completed.
 The subsequent 176,330-example candidate training has no verified completion

@@ -10,11 +10,12 @@ The completed fast-protocol comparison scored unified v4 at **53.97% BLINK,
 68.48% TempCompass multiple choice, and 71.14% TempCompass yes/no**. Qwen3.5-9B
 scored **65.91%, 71.65%, and 75.09%** on the same source splits. V4 scored
 205/231 (88.74%) on public JevBench tasks. This does not establish a SOTA rank.
-The 117,330-example text expansion and its features are saved on Modal; new
-candidate training and consolidated-model verification remain unverified.
-Modal access recovered after a temporary workspace-disabled error; both jobs
-have resumed. Full measurements and limits
-are in the audit linked below.
+The [complete unified v4 model](https://huggingface.co/ferdinandl007/jev-omni-unified-v4)
+is public. Anonymous full-model loading and Choice/Noul/Score outputs were
+verified on Modal at revision `7a86292f3b72ea29b8a96d9332e4ef2011d0c8f3`.
+The 117,330-example text expansion and its features are saved on Modal;
+new candidate training is in progress and has not yet passed evaluation.
+Full measurements and limits are in the audit linked below.
 
 The [2026-09-30 unified-model and benchmark audit](docs/UNIFIED_RELEASE_AND_BENCHMARKS.md) records all admitted sources, screenshot overlap findings, the new 59,000-example visual-SoccerNet/GUI/general candidate, and the standard-source BLINK/TempCompass comparison protocol. Its external benchmark runs are separate from the historical internal scores below. The unified candidate matches v3's internal general test score at 8,051/9,284 (86.72%); that is not a standard benchmark ranking.
 

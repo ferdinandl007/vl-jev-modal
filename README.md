@@ -31,7 +31,8 @@ The [Glim 12B model](https://huggingface.co/ferdinandl007/glim-12b)
 is public. Anonymous full-model loading and Choice/Noul/Score outputs were
 verified on Modal at revision `7a86292f3b72ea29b8a96d9332e4ef2011d0c8f3`.
 The 117,330-example text expansion and its features are saved on Modal;
-the next candidate is a Qwen3.5-9B LoRA pilot over text, images and temporal inputs.
+a bounded Qwen3.5-9B LoRA pilot has been submitted over 960 balanced text,
+image and temporal examples. See the [pilot configuration](docs/GLIM_LORA_PLAN.md).
 Workspace usage is capped at $30 and paid spend at $0.
 No new candidate benchmark or release is claimed yet.
 Full measurements and limits are in the audit linked below.

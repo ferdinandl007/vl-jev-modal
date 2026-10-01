@@ -1,58 +1,48 @@
-# Glim 12B: mixture first, then LoRA
+# Glim 9B: Qwen LoRA pilot
 
-User direction, 1 October 2026: finish a balanced mixture of text, vision and
-temporal tasks, then consider backbone LoRA. This is an experiment plan;
-no new backbone adapter has been trained or published by this project yet.
-The upstream backbone already contains merged LoRA training. Our v4 and the
-active text expansion train the decision head while freezing that backbone.
+User direction, 1 October 2026: switch the next candidate to Qwen3.5-9B and
+train a balanced text, image and temporal mixture. Published Glim 12B remains
+the verified Gemma-based release; its results do not transfer to this candidate.
 
-## Why this is the next candidate
+## Bounded pilot
 
-Head training can change the readout but cannot learn new backbone features.
-The measured BLINK deficit and weak SoccerNet gains justify testing backbone
-adaptation after establishing consistent input-only labels and holdouts.
-LoRA reduces training memory and parameter count; it does not reduce the
-12B backbone's inference size or guarantee faster decisions or better scores.
+- Base: `Qwen/Qwen3.5-9B`, revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a`.
+- Training: 960 examples, 320 per modality. Separate development and test
+  samples each contain 32 per modality. Frozen manifests live on Modal.
+- Rank 8, alpha 16, dropout 0.05; language self-attention Q/K/V/output
+  projections only. Vision encoder stays frozen. One epoch, learning rate
+  0.00002, accumulation 8, BF16, gradient checkpointing.
+- Text uses an Ollama-shaped single-question schema and A–Z answer logits.
+  Choice, Noul and Score are trained through candidate-token classification.
+- Video uses four ordered frames decoded from real clips, with timestamps and
+  duration. This is a declared frame-sequence extension, not stock Ollama
+  video input or a native-video processor evaluation.
+- All downloads, preparation, training and artifacts stay on Modal.
+- One A100 80GB job, at most 90 minutes (roughly $5 maximum compute budget).
+  Workspace usage cap is $30; paid spend cap is $0. Full retraining is not
+  automatically launched.
 
-## Freeze the mixture
+Implementation: `experiments/modal_glim_qwen_lora.py`. Deployment:
+`glim-qwen9b-lora-pilot`. Initial training call:
+`fc-01M3TX30PPB02FXCQ3XX9HA492`.
 
-- Text: routing, absence/none, evidence sufficiency and ordinal rating.
-- Vision: visual relations, source-grounded sports questions and GUI choices.
-- Temporal: genuine ordered clips, motion/change/event order, preserving real
-  timestamps. Do not infer continuity between unrelated views or train on
-  answers that require unseen future frames or outside facts.
-- Retain prior skills through balanced source/modality sampling and replay.
-- Preserve held-out source groups before training. Public benchmark IDs are
-  reserved and never used to choose adapters or epochs.
-- Audio is not covered by the completed external benchmark suite; do not
-  advertise an audio improvement from these experiments.
+## Evaluation and publication gates
 
-The existing full mixture and new text sources remain audited in the dataset
-notes. The 117,330 new text rows outweigh the earlier 59,000 mixture, so
-uniform sampling of all rows is not automatically balanced by modality.
+A completed pilot is a candidate, not a promoted release. Derived pilot
+samples establish basic performance only. Run the selected candidate on exact
+public benchmark subsets, preserve split and source overlap checks, and reuse
+published competitor scores only when protocols match. Do not rerun competitor
+models or infer improvement from existing Qwen base scores.
 
-## First LoRA pilot
+Save the adapter before evaluation; record dependencies, targeted modules,
+manifest hashes and actual results. Check finite losses and gradients. A
+runtime limit saves a partial adapter and does not mark the run complete.
 
-Use one small adapter (initial rank 8 or 16) on a selected set of decoder
-attention projections and train the existing decision head jointly. Record
-all target modules, adapter rank/alpha/dropout, sampling weights, base/head
-revisions and trainable parameter count. Start with the vision encoder frozen;
-consider projection/encoder adaptation only if the measured failure cases
-justify it. More rank or full retraining is a later experimental choice.
+Ollama publication requires conversion/import and actual runtime verification.
+The current stock decision API supports text; vision/video need a separate
+explicit media interface. Neither a LoRA file nor our API adapter proves
+`ollama pull` compatibility. See [compatibility notes](OLLAMA_COMPATIBILITY.md).
 
-Cached frozen-backbone features cannot train LoRA: the pilot must use original
-text/media with gradient-enabled backbone forwards. That changes compute cost.
-Run a small, explicitly budgeted pilot before attempting the whole corpus;
-do not automatically launch full retraining under the $30 credit allowance.
-
-Select on development retention checks, then evaluate the selected Glim model
-once per reserved public benchmark protocol. Reuse published competitor
-scores; match splits, IDs, criteria, frame sampling and scoring when comparing.
-Publish the new adapter/merged checkpoint and its own results. Existing v4
-scores do not transfer to a newly trained or quantized artifact.
-
-## Ollama requirement
-
-A Gemma LoRA alone does not port the native head into Ollama's token-scoring
-runtime. Faithful native-head runtime support and a token-scoring/distilled
-edition are different publication routes. See `OLLAMA_COMPATIBILITY.md`.
+The existing large source mixture and 117,330 new text rows remain available
+for a later budgeted expansion. This initial balanced sample does not claim
+full-corpus training, calibrated confidence or state-of-the-art accuracy.

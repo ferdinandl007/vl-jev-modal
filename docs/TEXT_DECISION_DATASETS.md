@@ -11,7 +11,8 @@ Modal access recovered after a temporary workspace-disabled error. Training
 resumed after fixing a loader assumption: MultiNLI pair IDs can repeat for
 distinct inputs, so saved features are verified using each pack's manifest
 hash, model revision, row position, source ID and target. No integrity checks
-are bypassed. The candidate has no verified completed training report yet;
+are bypassed. Training was subsequently stopped at the user's request to pause Modal spending.
+The candidate has no verified completed training report;
 do not claim that the new data is already in a published checkpoint.
 
 The frozen `text-decisions-v2` build contains **117,330 new training decisions**,

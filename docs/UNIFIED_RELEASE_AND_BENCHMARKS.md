@@ -139,7 +139,8 @@ it does not yet include the 117,330-example text expansion.
 The text expansion's 117,330 training examples and all feature packs completed.
 The subsequent 176,330-example candidate training has no verified completion
 report. It does not inherit v4's external scores. Training resumed from the
-saved features after repairing repeated MultiNLI source-ID handling.
+saved features after repairing repeated MultiNLI source-ID handling, then
+was stopped at the user's request to pause Modal spending.
 No local dataset/model fallback is authorized.
 
 `experiments/modal_official_benchmarks.py` materializes source labels and media
@@ -239,3 +240,12 @@ without repeating inference. Then `--mode analyze` runs paired cluster
 bootstrap comparisons. Both completed after Modal access recovered. V4's
 accuracy differences against v3 include zero in their 95% bootstrap intervals
 on all three primary benchmarks; these results do not establish a broad gain.
+
+## Paused at user request
+
+On 1 October 2026 the user requested that Modal work stop and the completed
+model be published. Unified v4 was already publicly uploaded and anonymously
+verified. Metadata revision `87a75beb6d710c12677883b9a6c8187db568b81b` adds
+paired comparison results and public JevBench diagnostics without changing
+the verified head. The active new-text training app was stopped; its corpus
+and features remain on Modal. No new candidate result is claimed.

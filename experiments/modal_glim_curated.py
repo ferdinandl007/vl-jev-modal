@@ -262,16 +262,42 @@ def launch_when_ready(metered_usd:float):
 
 
 @app.function(image=modal.Image.debian_slim(python_version="3.11").add_local_python_source("experiments"),volumes={"/output":pilot.output},timeout=300)
-def record_kernel_restart(old_call_id:str,new_call_id:str):
+def record_kernel_restart(old_call_id:str,new_call_id:str,reason:str="FLA refused Triton 3.6 gated backward on Hopper before any optimizer update"):
     import time
     from pathlib import Path
     pilot.output.reload();root=Path('/output')/RUN;path=root/'launch.json';record=json.loads(path.read_text())
     if record['training_call_id']!=old_call_id:raise ValueError('Launch record changed; no silent overwrite')
-    record.setdefault('failed_attempts',[]).append({'call_id':old_call_id,'reason':'FLA refused Triton 3.6 gated backward on Hopper before any optimizer update'})
+    record.setdefault('failed_attempts',[]).append({'call_id':old_call_id,'reason':reason})
     record.update(training_call_id=new_call_id,status='resubmitted_with_kernel_fix',triton_version='3.7.1',submitted_unix=time.time())
     path.write_text(json.dumps(record,indent=2));pilot.output.commit();return record
 
 
+@app.function(image=image,volumes=mounts,timeout=900,memory=8192,cpu=(2,2))
+def verify_inputs():
+    from pathlib import Path
+    from transformers import AutoProcessor
+    processor=AutoProcessor.from_pretrained(pilot.MODEL,revision=pilot.REVISION);processor.tokenizer.padding_side='left'
+    rows=[json.loads(line) for line in (Path('/output')/RUN/'train.jsonl').open()]
+    tests={}
+    for kind in ('text','image','video'):
+        subset=[r for r in rows if r['modality']==kind]
+        tests[kind+'_long_text']=max(subset,key=lambda r:len(pilot.compiled(r)[0]))
+        tests[kind+'_most_assets']=max(subset,key=lambda r:len(assets(r)))
+    for family in ('helpsteer_score','object_count','soccer_vqa_replay_grounding','gui_named_control_next_click'):
+        tests[family]=next(r for r in rows if r['task_family']==family)
+    output=[]
+    for name,row in tests.items():
+        conversation,keys,target=pilot.conversation(row)
+        pixel_budget=262144 if row['modality']=='image' else 65536
+        inputs=processor.apply_chat_template([conversation,conversation],tokenize=True,return_dict=True,return_tensors='pt',add_generation_prompt=True,enable_thinking=False,processor_kwargs={'padding':True,'images_kwargs':{'size':{'shortest_edge':4096,'longest_edge':pixel_budget}}})
+        shape=list(inputs['input_ids'].shape)
+        if shape[0]!=2 or shape[1]>4096:raise ValueError('Curated batched input exceeds declared context budget: '+name+' '+str(shape))
+        grid_tokens=(inputs['image_grid_thw'].prod(dim=-1)//4).tolist() if 'image_grid_thw' in inputs else []
+        if grid_tokens and max(grid_tokens)>pixel_budget//1024:raise ValueError('Image pixel budget was not preserved: '+name)
+        output.append({'case':name,'input_ids_shape':shape,'assets':len(assets(row)),'pixel_budget':pixel_budget,'image_token_counts':grid_tokens,'finite_pixels':bool(inputs['pixel_values'].isfinite().all()) if 'pixel_values' in inputs else None})
+    path=Path('/output')/RUN/'input-verification.json';path.write_text(json.dumps(output,indent=2));pilot.output.commit();return output
+
+
 @app.local_entrypoint()
 def main(mode:str="prepare"):
-    print(json.dumps({"audit":audit,"prepare":prepare,"train":train,"status":status}[mode].remote(),indent=2))
+    print(json.dumps({"audit":audit,"prepare":prepare,"train":train,"status":status,"verify_inputs":verify_inputs}[mode].remote(),indent=2))

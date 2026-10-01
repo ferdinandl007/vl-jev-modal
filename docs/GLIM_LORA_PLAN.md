@@ -130,3 +130,22 @@ Remaining credits were checked again before the single restart: $1.71 metered,
 $0 billed. Current training call: `fc-01M3TYZ9R2F2J7DNSHK1DYQGAC`.
 The original failed call is retained in the launch audit. The dataset and
 runtime/credit allocation remain unchanged.
+
+### Input budget verification and stable training
+
+A second early call stopped at the context-size guard. In Transformers 5.17,
+legacy processing kwargs can replace an explicit `processor_kwargs` dictionary.
+Putting padding inside that dictionary preserves both padding and image limits.
+The shared renderer was checked on Modal CPU with ten two-example batches,
+including text, ordinal Score, counting, GUI and five-asset replay inputs.
+All passed; longest tested input was 1,809 tokens, with finite image tensors.
+No media were dropped to make the checks pass.
+
+Current training call: `fc-01M3TZC3MY7N5DTKNRN76HER92`. It passed 224 training
+examples and 28 optimizer updates with finite losses/gradients. Early speed
+following the first 160 examples: 3.49 examples/second, projecting 5,875 seconds
+and approximately $7.60 in training compute before evaluation. This is an early
+estimate, not a finished-run measurement or a controlled GPU-only comparison;
+batching and the curated input distribution also differ from the A100 pilot.
+The conservative $18 training allocation and account credit caps remain in force.
+Latest billing read: $1.92 metered, $0 billed.

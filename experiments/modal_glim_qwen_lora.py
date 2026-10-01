@@ -71,6 +71,35 @@ def prepare():
     (root/"manifest.json").write_text(json.dumps(manifest,indent=2));output.commit();return manifest
 
 
+def conversation(row):
+    from pathlib import Path
+    import cv2
+    from PIL import Image
+    prompt,keys,target=compiled(row);content=[];media=row.get("media") or {}
+    if media.get("kind")=="modal_media_sequence":media_assets=media["assets"]
+    elif media.get("kind") in {"modal_image","modal_video"}:media_assets=[{"kind":"video" if media["kind"]=="modal_video" else "image","path":media["path"]}]
+    else:media_assets=[]
+    if not media_assets and row["modality"]!="text":
+        folder=Path("/pilot")/row["split"]/row["id"]
+        media_assets=[{"kind":"image","path":str(p)} for p in sorted(folder.glob("image_*.jpg"))]
+        if not media_assets:raise ValueError("Missing media input: "+row["id"])
+    for asset_index,asset in enumerate(media_assets):
+        if len(media_assets)>1:content.append({"type":"text","text":f"Source asset {asset_index+1} of {len(media_assets)}; each clip has its own timeline."})
+        if asset["kind"]=="image":
+            with Image.open(asset["path"]) as im:content.append({"type":"image","image":im.convert("RGB")})
+        else:
+            cap=cv2.VideoCapture(asset["path"])
+            try:
+                n=int(cap.get(cv2.CAP_PROP_FRAME_COUNT));fps=float(cap.get(cv2.CAP_PROP_FPS))
+                if n<1 or fps<=0:raise ValueError("Invalid video metadata: "+row['id'])
+                for j in range(4):
+                    pos=min(n-1,int((j+.5)*n/4));cap.set(cv2.CAP_PROP_POS_FRAMES,pos);ok,frame=cap.read()
+                    if not ok:raise ValueError("Video decode failure: "+row['id'])
+                    content.extend([{"type":"text","text":f"Time {pos/fps:.3f}s of {n/fps:.3f}s"},{"type":"image","image":Image.fromarray(cv2.cvtColor(frame,cv2.COLOR_BGR2RGB))}])
+            finally:cap.release()
+    content.append({"type":"text","text":prompt})
+    return [{"role":"user","content":content}],keys,target
+
 def train_impl(run=RUN, runtime_seconds=4800, curate=False):
     import hashlib,random,time
     from pathlib import Path
@@ -112,34 +141,9 @@ def train_impl(run=RUN, runtime_seconds=4800, curate=False):
     if any(len(ids)!=1 for ids in letters):raise ValueError("Answer code must be one tokenizer token")
     optimizer=torch.optim.AdamW([p for p in model.parameters() if p.requires_grad],lr=2e-5,weight_decay=.01)
     processor.tokenizer.padding_side="left"
-    def conversation(row):
-        prompt,keys,target=compiled(row);content=[];media=row.get("media") or {}
-        if media.get("kind")=="modal_media_sequence":media_assets=media["assets"]
-        elif media.get("kind") in {"modal_image","modal_video"}:media_assets=[{"kind":"video" if media["kind"]=="modal_video" else "image","path":media["path"]}]
-        else:media_assets=[]
-        if not media_assets and row["modality"]!="text":
-            folder=Path("/pilot")/row["split"]/row["id"]
-            media_assets=[{"kind":"image","path":str(p)} for p in sorted(folder.glob("image_*.jpg"))]
-            if not media_assets:raise ValueError("Missing media input: "+row["id"])
-        for asset_index,asset in enumerate(media_assets):
-            if len(media_assets)>1:content.append({"type":"text","text":f"Source asset {asset_index+1} of {len(media_assets)}; each clip has its own timeline."})
-            if asset["kind"]=="image":
-                with Image.open(asset["path"]) as im:content.append({"type":"image","image":im.convert("RGB")})
-            else:
-                cap=cv2.VideoCapture(asset["path"])
-                try:
-                    n=int(cap.get(cv2.CAP_PROP_FRAME_COUNT));fps=float(cap.get(cv2.CAP_PROP_FPS))
-                    if n<1 or fps<=0:raise ValueError("Invalid video metadata: "+row['id'])
-                    for j in range(4):
-                        pos=min(n-1,int((j+.5)*n/4));cap.set(cv2.CAP_PROP_POS_FRAMES,pos);ok,frame=cap.read()
-                        if not ok:raise ValueError("Video decode failure: "+row['id'])
-                        content.extend([{"type":"text","text":f"Time {pos/fps:.3f}s of {n/fps:.3f}s"},{"type":"image","image":Image.fromarray(cv2.cvtColor(frame,cv2.COLOR_BGR2RGB))}])
-                finally:cap.release()
-        content.append({"type":"text","text":prompt})
-        return [{"role":"user","content":content}],keys,target
     def encode_batch(batch):
         items=[conversation(r) for r in batch]
-        inputs=processor.apply_chat_template([item[0] for item in items],tokenize=True,return_dict=True,return_tensors="pt",padding=True,add_generation_prompt=True,enable_thinking=False,processor_kwargs={"images_kwargs":{"size":{"shortest_edge":4096,"longest_edge":(262144 if curate and all(r["modality"]=="image" for r in batch) else 65536)}}})
+        inputs=processor.apply_chat_template([item[0] for item in items],tokenize=True,return_dict=True,return_tensors="pt",add_generation_prompt=True,enable_thinking=False,processor_kwargs={"padding":True,"images_kwargs":{"size":{"shortest_edge":4096,"longest_edge":(262144 if curate and all(r["modality"]=="image" for r in batch) else 65536)}}})
         if inputs["input_ids"].shape[-1]>(4096 if curate else 2048):raise ValueError("Prompt exceeds declared context budget: "+batch[0]['id'])
         return inputs.to("cuda"),[item[1] for item in items],[item[2] for item in items]
     def encode(row):

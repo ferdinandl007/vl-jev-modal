@@ -12,6 +12,8 @@ This repository contains **code and documentation only**. It contains no model w
 
 **Glim 12B** is the published unified v4 checkpoint. Charts show measured results; the planned Qwen LoRA candidate has no verified score yet. See the [protocol, counts and limitations](docs/UNIFIED_RELEASE_AND_BENCHMARKS.md) before comparing these results with published leaderboards.
 
+**How the baselines work:** Glim and open Jev-Omni use trained decision heads. Gemma and Qwen are unmodified base-model decision-scoring baselines: one forward pass, thinking disabled, and candidate answer-token logits. They were not fine-tuned into dedicated decision models for these results. The comparison measures constrained decision accuracy; equal architectures and runtime efficiency are not established.
+
 ### TypeSafe AI Jev
 
 TypeSafe AI’s hosted [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) is a separate model from the open [Jev-Omni](https://huggingface.co/akhilaaa3/Jev-Omni) checkpoint in the charts. We do not yet have a TypeSafe Jev score on these exact benchmark scopes.

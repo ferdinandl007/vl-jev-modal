@@ -374,7 +374,8 @@ def text_metrics(torch,head,rows):
 
 
 @app.function(image=base_image,volumes={**mounts,"/general-data":modal.Volume.from_name("vl-jev-general-v1-data"),
-              "/gui-data":modal.Volume.from_name("vl-jev-gui-general-data")},gpu="H100",timeout=7200,memory=16384)
+              "/gui-data":modal.Volume.from_name("vl-jev-gui-general-data")},gpu="L4",timeout=3600,
+              cpu=(2,2),memory=(16384,32768),max_containers=1,scaledown_window=10)
 def train():
     import copy, hashlib, random
     from pathlib import Path
@@ -389,7 +390,9 @@ def train():
     source=hf_hub_download(MODEL_ID,"jev_omni.py",revision=MODEL_REVISION)
     sys.path.insert(0,str(Path(source).parent))
     import jev_omni as package
+    print("Loading verified packed text features; no backbone weights needed",flush=True)
     text_train=load_features(torch,"train");text_dev=load_features(torch,"dev")
+    print(f"Text features loaded: {len(text_train)} train, {len(text_dev)} dev",flush=True)
     old_root=Path("/general-runs/general-head-v2")
     replay=_load_general_features(torch,old_root,"train","v2")+_load_gui_features(torch,"train")
     replay += [r for r in _load_soccer_features(torch,"train",32,scope="all") if r["family"] in DIRECT_VISUAL_FAMILIES]
@@ -406,6 +409,7 @@ def train():
     def measure():
         return {"text":text_metrics(torch,head,text_dev),"general":_general_metrics(torch,head,general_dev),
                 "gui":_general_metrics(torch,head,gui_dev),"soccer":_general_metrics(torch,head,soccer_dev)}
+    print(f"Replay features loaded: {len(replay)}; measuring baseline",flush=True)
     baseline=measure();best=baseline;best_state=copy.deepcopy(head.state_dict());selected=0;history=[]
     rows=replay+text_train;optimizer=torch.optim.AdamW(head.parameters(),lr=2e-5,weight_decay=.01)
     for epoch in range(3):

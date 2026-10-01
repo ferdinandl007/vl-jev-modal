@@ -11,7 +11,9 @@ Modal access recovered after a temporary workspace-disabled error. Training
 resumed after fixing a loader assumption: MultiNLI pair IDs can repeat for
 distinct inputs, so saved features are verified using each pack's manifest
 hash, model revision, row position, source ID and target. No integrity checks
-are bypassed. Training was subsequently stopped at the user's request to pause Modal spending.
+are bypassed. Training was stopped at the user's request, then explicitly authorized to resume
+within this month's remaining $30 free credits. Workspace usage is now capped
+at $30 and paid spend at $0. The one-worker L4 head run has a one-hour timeout.
 The candidate has no verified completed training report;
 do not claim that the new data is already in a published checkpoint.
 
@@ -131,3 +133,7 @@ point regression in general text/vision development accuracy, one percentage
 point in GUI/Soccer development accuracy, and no more than 0.02 worsening in
 Score expected-level MAE. Public benchmarks do not select epochs. A candidate
 does not inherit v4's external benchmark scores.
+
+Next external text benchmark: the exact 3,880-record Bespoke suite used in
+Ollama's launch, preserving published subset IDs, source scoring and criteria.
+Run only Glim and reuse published reference-model scores. This remains planned.

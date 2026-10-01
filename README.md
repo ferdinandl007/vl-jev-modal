@@ -10,12 +10,14 @@ The completed fast-protocol comparison scored unified v4 at **53.97% BLINK,
 68.48% TempCompass multiple choice, and 71.14% TempCompass yes/no**. Qwen3.5-9B
 scored **65.91%, 71.65%, and 75.09%** on the same source splits. V4 scored
 205/231 (88.74%) on public JevBench tasks. This does not establish a SOTA rank.
-The [complete unified v4 model](https://huggingface.co/ferdinandl007/jev-omni-unified-v4)
+The [Glim 12B model](https://huggingface.co/ferdinandl007/glim-12b)
 is public. Anonymous full-model loading and Choice/Noul/Score outputs were
 verified on Modal at revision `7a86292f3b72ea29b8a96d9332e4ef2011d0c8f3`.
 The 117,330-example text expansion and its features are saved on Modal;
-new candidate training was stopped at the user's request to pause Modal spending
-and has not passed evaluation.
+new candidate training resumed with explicit user authorization inside this
+month's remaining $30 free-credit allowance. Workspace usage is capped at $30
+and paid spend at $0. The single L4 training worker has a one-hour timeout;
+no new candidate benchmark or release is claimed yet.
 Full measurements and limits are in the audit linked below.
 
 The [2026-09-30 unified-model and benchmark audit](docs/UNIFIED_RELEASE_AND_BENCHMARKS.md) records all admitted sources, screenshot overlap findings, the new 59,000-example visual-SoccerNet/GUI/general candidate, and the standard-source BLINK/TempCompass comparison protocol. Its external benchmark runs are separate from the historical internal scores below. The unified candidate matches v3's internal general test score at 8,051/9,284 (86.72%); that is not a standard benchmark ranking.
@@ -104,3 +106,11 @@ Run the pilot evaluation after its builder finishes. The pilot uses one pinned t
 The **MIT license applies only to code and documentation in this repository**. It does not grant rights to third-party datasets, footage, images, model weights, or model code. The mixed dataset is marked research-only because source terms and underlying media rights differ; review each source before redistribution or commercial training. In particular, no fetched third-party media or generated labels are published here. See [dataset notes](docs/DATASET_PILOT.md).
 
 Jev-Omni is an independent upstream model. This project is not affiliated with TypeSafe AI and does not reproduce TypeSafe's unpublished model or training method. Closed-choice logits and confidence concentration are not calibrated probabilities without a held-out calibration study.
+
+## Glim publication and next training stage
+
+The model is named **Glim 12B**. The legacy model link redirects to the named
+repository; native head weights are unchanged. See
+[Ollama compatibility](docs/OLLAMA_COMPATIBILITY.md) and
+[LoRA plan](docs/GLIM_LORA_PLAN.md). Future external comparisons run Glim only
+on exact published benchmark subsets and reuse published competitor scores.

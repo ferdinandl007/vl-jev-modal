@@ -125,7 +125,7 @@ Choice 123/139, Noul 68/74, Score exact class 14/18. Original source scoring,
 label order and native typed prompts were used. This is not the current
 sealed composite, and the eighteen Score questions provide limited evidence.
 
-The [complete unified v4 package](https://huggingface.co/ferdinandl007/jev-omni-unified-v4)
+The [complete unified v4 package](https://huggingface.co/ferdinandl007/glim-12b)
 is public, containing 23,919,549,408 bytes of backbone weights plus the
 selected head and typed adapter. Anonymous complete-model loading and all
 three typed output structures were verified on Modal at revision
@@ -249,3 +249,19 @@ verified. Metadata revision `87a75beb6d710c12677883b9a6c8187db568b81b` adds
 paired comparison results and public JevBench diagnostics without changing
 the verified head. The active new-text training app was stopped; its corpus
 and features remain on Modal. No new candidate result is claimed.
+
+## Named release and revised budget authorization
+
+The user selected **Glim 12B**. Canonical repo:
+`ferdinandl007/glim-12b`, metadata revision
+`94bb743d449e48bb54840f868c907f318e2c4093`. Legacy link redirect and unchanged
+head were verified anonymously; weights retain the previous full-model loading
+verification. Native stock Ollama loading is not verified.
+
+The user subsequently authorized training to resume now within this month's
+remaining $30 free credits. Workspace usage limit was changed from $120 to
+$30, and paid spend limit from $30 to $0, with UI readback. Volume charges are
+outside workload-stop guarantees; current metered storage cost is zero. The
+head-only run uses saved features on one L4, bounded CPU/memory and a one-hour
+timeout. Future benchmarking evaluates only Glim and uses published scores
+for other models under matching source IDs/protocols.

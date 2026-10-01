@@ -12,6 +12,15 @@ This repository contains **code and documentation only**. It contains no model w
 
 **Glim 12B** is the published unified v4 checkpoint. Charts show measured results; the planned Qwen LoRA candidate has no verified score yet. See the [protocol, counts and limitations](docs/UNIFIED_RELEASE_AND_BENCHMARKS.md) before comparing these results with published leaderboards.
 
+### TypeSafe AI Jev
+
+TypeSafe AI’s hosted [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) is a separate model from the open [Jev-Omni](https://huggingface.co/akhilaaa3/Jev-Omni) checkpoint in the charts. We do not yet have a TypeSafe Jev score on these exact benchmark scopes.
+
+| Comparison | Status |
+| --- | --- |
+| Glim 12B vs original open Jev-Omni | Measured; shown above |
+| Glim 12B vs TypeSafe AI Jev | Pending a shared benchmark and matching scoring protocol |
+
 ## Current result
 
 The completed fast-protocol comparison scored unified v4 at **53.97% BLINK,

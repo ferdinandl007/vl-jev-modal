@@ -11,8 +11,9 @@ The completed fast-protocol comparison scored unified v4 at **53.97% BLINK,
 scored **65.91%, 71.65%, and 75.09%** on the same source splits. V4 scored
 205/231 (88.74%) on public JevBench tasks. This does not establish a SOTA rank.
 The 117,330-example text expansion and its features are saved on Modal; new
-candidate training and consolidated-model publication remain unverified
-because Modal reports the workspace disabled. Full measurements and limits
+candidate training and consolidated-model verification remain unverified.
+Modal access recovered after a temporary workspace-disabled error; both jobs
+have resumed. Full measurements and limits
 are in the audit linked below.
 
 The [2026-09-30 unified-model and benchmark audit](docs/UNIFIED_RELEASE_AND_BENCHMARKS.md) records all admitted sources, screenshot overlap findings, the new 59,000-example visual-SoccerNet/GUI/general candidate, and the standard-source BLINK/TempCompass comparison protocol. Its external benchmark runs are separate from the historical internal scores below. The unified candidate matches v3's internal general test score at 8,051/9,284 (86.72%); that is not a standard benchmark ranking.

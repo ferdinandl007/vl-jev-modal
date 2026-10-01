@@ -129,14 +129,14 @@ The full v4 package was prepared on Modal (23,919,549,408 bytes of backbone
 weights plus the selected head and adapter). **Public publication and anonymous
 complete-model verification have not completed.** Modal subsequently returned
 `ConflictError: workspace ... is disabled`; follow-up calls could not connect.
-The source scripts are public, but this document must not imply that the
-consolidated Hugging Face repository is already usable.
+Modal access subsequently recovered, aggregation and paired analysis completed,
+and publication resumed. Anonymous complete-model verification is still pending.
 
 The text expansion's 117,330 training examples and all feature packs completed.
 The subsequent 176,330-example candidate training has no verified completion
-report. It does not inherit v4's external scores. Restore Modal workspace
-access, then resume training, aggregation, paired analysis and publication
-from the saved artifacts. No local dataset/model fallback is authorized.
+report. It does not inherit v4's external scores. Training resumed from the
+saved features after repairing repeated MultiNLI source-ID handling.
+No local dataset/model fallback is authorized.
 
 `experiments/modal_official_benchmarks.py` materializes source labels and media
 from pinned revisions. Benchmark datasets are evaluation-only and have no
@@ -226,3 +226,12 @@ remain immutable. Anonymous readback must match the selected head hash and
 exercise all three typed outputs before marking the consolidated release ready.
 Benchmark status and limitations belong in the model card; no SOTA or hidden-test
 claim is permitted from the internal 86.72% score.
+
+### Recover completed benchmark measurements
+
+Run `python3 -m modal run -m experiments.modal_official_benchmarks --mode aggregate`
+to validate complete saved prediction coverage and regenerate the aggregate
+without repeating inference. Then `--mode analyze` runs paired cluster
+bootstrap comparisons. Both completed after Modal access recovered. V4's
+accuracy differences against v3 include zero in their 95% bootstrap intervals
+on all three primary benchmarks; these results do not establish a broad gain.

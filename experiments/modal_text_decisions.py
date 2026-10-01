@@ -317,21 +317,39 @@ def extract(shard: int=0, shards: int=8):
 
 
 def load_features(torch, split):
+    import hashlib
     from pathlib import Path
     from concurrent.futures import ThreadPoolExecutor
-    expected={r["id"]:r for r in text_rows(split)};found={}
-    def read(path):return torch.load(path,map_location="cpu",weights_only=True)["rows"]
-    paths=list((Path("/text-data")/TEXT_RUN/"features"/split).glob("shard*of08/pack-*.pt"))
+    from experiments.modal_jev_omni_sports_train import MODEL_REVISION
+    rows=text_rows(split)
+    root=Path("/text-data")/TEXT_RUN/"features"/split
+    jobs=[]
+    for shard in range(8):
+        subset=[(i,r) for i,r in enumerate(rows) if i%8==shard]
+        for offset in range(0,len(subset),64):
+            jobs.append((root/f"shard{shard:02d}of08"/f"pack-{offset//64:05d}.pt",subset[offset:offset+64]))
+    if set(root.glob("shard*of08/pack-*.pt"))!={path for path,_ in jobs}:
+        raise ValueError("Text feature pack coverage mismatch")
+    def read(job):
+        path,batch=job;pack=torch.load(path,map_location="cpu",weights_only=True)
+        originals=[r for _,r in batch]
+        lock=hashlib.sha256(json.dumps(originals,sort_keys=True).encode()).hexdigest()
+        if pack["manifest_sha256"]!=lock or pack["model_revision"]!=MODEL_REVISION:
+            raise ValueError(f"Text feature manifest or model mismatch: {path}")
+        if len(pack["rows"])!=len(batch):raise ValueError("Text feature pack row count mismatch")
+        output=[]
+        for (index,original),record in zip(batch,pack["rows"]):
+            keys,_=typed_options(original["question"])
+            if record["id"]!=original["id"] or record["target"]!=keys.index(original["gold"]["key"]) or record["count"]!=len(keys):
+                raise ValueError("Text feature identity or target mismatch")
+            # MultiNLI pair IDs can repeat for distinct annotated inputs. The
+            # authenticated pack manifest and position identify each feature.
+            output.append((index,record))
+        return output
     with ThreadPoolExecutor(max_workers=8) as pool:
-        for records in pool.map(read,paths):
-            for r in records:
-                original=expected.get(r["id"])
-                if original is None or r["id"] in found:raise ValueError("Text feature identity mismatch")
-                keys,_=typed_options(original["question"])
-                if r["target"]!=keys.index(original["gold"]["key"]) or r["count"]!=len(keys):raise ValueError("Text feature target mismatch")
-                found[r["id"]]=r
-    if set(found)!=set(expected):raise ValueError(f"Missing text features for {split}: {len(found)}/{len(expected)}")
-    return [found[i] for i in sorted(found)]
+        found=[item for batch in pool.map(read,jobs) for item in batch]
+    if sorted(i for i,_ in found)!=list(range(len(rows))):raise ValueError("Missing text feature positions")
+    return [r for _,r in sorted(found,key=lambda item:item[0])]
 
 
 def text_metrics(torch,head,rows):

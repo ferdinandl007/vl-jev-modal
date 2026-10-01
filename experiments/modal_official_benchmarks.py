@@ -462,6 +462,8 @@ def main(mode: str = "build", model: str = "jev", limit: int = 0, timeline: bool
         answer = pipeline.remote()
     elif mode == "analyze":
         answer = analyze.remote()
+    elif mode == "aggregate":
+        answer = aggregate.remote()
     elif mode == "status":
         answer = status.remote()
     elif mode == "progress":
@@ -554,3 +556,27 @@ def analyze_saved_results():
 def analyze():
     result=analyze_saved_results();results.commit()
     return result
+
+
+@app.function(image=cpu,volumes={"/results":results,"/bench":data},timeout=3600,memory=4096)
+def aggregate():
+    """Resume a completed run's publication gate without repeating inference."""
+    from pathlib import Path
+    from concurrent.futures import ThreadPoolExecutor
+    source=[json.loads(line) for line in Path("/bench/rows.jsonl").open()]
+    merged={}
+    for prefix in ("gemma12b-sequence","qwen4b-sequence","qwen9b-sequence","decider2b-sequence",
+                   "jev_all-sequence","jev_all-native","jev_all-timeline"):
+        paths=[p for folder in Path("/results").glob(prefix+"-full-v2-shard*of04") for p in folder.glob("pack-*.json")]
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            records=[r for batch in pool.map(lambda p:json.loads(p.read_text()),sorted(paths)) for r in batch]
+        expected=[r for r in source if r["suite"]=="blink_val" and len(r["images"])==1] if prefix.startswith("decider") else source
+        if len(records)!=len(expected) or {r["id"] for r in records}!={r["id"] for r in expected}:
+            raise ValueError(f"Incomplete source coverage: {prefix}")
+        report=report_for(records,len(expected))
+        if report["failures"]:raise ValueError("Inference failures block publication")
+        report["video_mode"]=prefix.split("-",1)[1]
+        report["evaluated_scope"]="eligible_single_image_subset" if prefix.startswith("decider") else "full_BLINK_val_TempCompass_MC_yes_no"
+        merged[prefix]=report
+    Path("/results/aggregate.json").write_text(json.dumps(merged,indent=2));results.commit()
+    return {k:{"processed":v["processed_rows"],"failures":v["failures"]} for k,v in merged.items()}

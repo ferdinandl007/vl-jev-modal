@@ -7,10 +7,12 @@ stored in this checkout.
 ## Sources admitted
 
 Status on 1 October 2026: corpus build and packed feature extraction completed.
-The new candidate has no verified completed training report. Modal returned
-that the workspace is disabled and subsequent calls could not connect. Resume
-from the saved feature packs when workspace access is restored; do not claim
-that the new data is already present in a published checkpoint.
+Modal access recovered after a temporary workspace-disabled error. Training
+resumed after fixing a loader assumption: MultiNLI pair IDs can repeat for
+distinct inputs, so saved features are verified using each pack's manifest
+hash, model revision, row position, source ID and target. No integrity checks
+are bypassed. The candidate has no verified completed training report yet;
+do not claim that the new data is already in a published checkpoint.
 
 The frozen `text-decisions-v2` build contains **117,330 new training decisions**,
 8,308 development decisions, 5,604 reserved calibration decisions and 6,337

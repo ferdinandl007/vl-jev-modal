@@ -114,3 +114,19 @@ Modal deployment: `glim-qwen9b-curated`. Training call:
 $0 billed, $28.40 remaining. The launcher checks the manifest and refuses a
 duplicate submission. `launch.json`, progress, budget-stop and completion reports
 are saved in `glim-qwen-lora/qwen9b-curated-20k-v3` on Modal.
+
+### H100 compiler repair
+
+The first H100 call failed on its first backward pass: FLA explicitly refuses
+the known incorrect gated-delta backward kernel on Hopper with Triton 3.4–3.7.0.
+No optimizer update completed. The corrected image pins Triton 3.7.1, the
+version recommended by the kernel guard ([upstream issue](https://github.com/fla-org/flash-linear-attention/issues/640)).
+This explicitly overrides Torch 2.10's bundled Triton 3.6 metadata pin for the
+FLA custom kernels; actual training forwards/backwards must pass finite-loss
+and gradient checks. The dependency versions are recorded in the final report.
+No incorrect-kernel guard is disabled.
+
+Remaining credits were checked again before the single restart: $1.71 metered,
+$0 billed. Current training call: `fc-01M3TYZ9R2F2J7DNSHK1DYQGAC`.
+The original failed call is retained in the launch audit. The dataset and
+runtime/credit allocation remain unchanged.

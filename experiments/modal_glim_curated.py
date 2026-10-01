@@ -6,7 +6,7 @@ from experiments.modal_general_v3_gui_test import test_data,test_media
 app=modal.App('glim-qwen9b-curated')
 RUN='qwen9b-curated-20k-v3'
 mounts={**pilot.mounts,'/gui-data':gui_data,'/gui-media':gui_media,'/gui-test-data':test_data,'/gui-test-media':test_media}
-image=pilot.image.add_local_python_source('experiments')
+image=pilot.gpu_image.pip_install('peft==0.21.1').pip_install('triton==3.7.1').add_local_python_source('experiments')
 
 
 def inventory_rows():
@@ -259,6 +259,17 @@ def launch_when_ready(metered_usd:float):
     (root/'launch-intent.json').write_text(json.dumps(intent,indent=2));pilot.output.commit()
     call=train.spawn();launch={**intent,'training_call_id':call.object_id,'status':'submitted','submitted_unix':time.time()}
     (root/'launch.json').write_text(json.dumps(launch,indent=2));pilot.output.commit();return launch
+
+
+@app.function(image=modal.Image.debian_slim(python_version="3.11").add_local_python_source("experiments"),volumes={"/output":pilot.output},timeout=300)
+def record_kernel_restart(old_call_id:str,new_call_id:str):
+    import time
+    from pathlib import Path
+    pilot.output.reload();root=Path('/output')/RUN;path=root/'launch.json';record=json.loads(path.read_text())
+    if record['training_call_id']!=old_call_id:raise ValueError('Launch record changed; no silent overwrite')
+    record.setdefault('failed_attempts',[]).append({'call_id':old_call_id,'reason':'FLA refused Triton 3.6 gated backward on Hopper before any optimizer update'})
+    record.update(training_call_id=new_call_id,status='resubmitted_with_kernel_fix',triton_version='3.7.1',submitted_unix=time.time())
+    path.write_text(json.dumps(record,indent=2));pilot.output.commit();return record
 
 
 @app.local_entrypoint()

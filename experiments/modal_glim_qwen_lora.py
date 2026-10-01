@@ -74,7 +74,8 @@ def prepare():
 def train_impl(run=RUN, runtime_seconds=4800, curate=False):
     import hashlib,random,time
     from pathlib import Path
-    import torch,cv2,peft,transformers
+    import torch,cv2,peft,transformers,triton
+    if curate and tuple(int(x) for x in triton.__version__.split(".")[:3])<(3,7,1):raise ValueError("Curated H100 training requires corrected Triton >=3.7.1")
     from PIL import Image
     from transformers import AutoProcessor,Qwen3_5ForConditionalGeneration
     from peft import LoraConfig,get_peft_model
@@ -200,7 +201,7 @@ def train_impl(run=RUN, runtime_seconds=4800, curate=False):
         scores=[r["expected_level_absolute_error"] for r in records if "expected_level_absolute_error" in r]
         if scores:result["score_expected_level_mae"]=sum(scores)/len(scores)
         (root/f"{split}-predictions.json").write_text(json.dumps(records));return result
-    report={"run":run,"status":"candidate_completed_not_promoted","base":MODEL,"revision":REVISION,"rank":8,"microbatch":microbatch,"trainable_parameters":sum(p.numel() for p in model.parameters() if p.requires_grad),"target_modules":targets,"manifest":manifest,"dev":evaluate("dev"),"test":evaluate("test"),"elapsed_seconds":time.monotonic()-started,"peft_version":peft.__version__,"transformers_version":transformers.__version__,"ollama":"Ollama-shaped single-question schema; chat template and media extension; import not verified","benchmark_status":"derived pilot diagnostics only; no external rank claim"}
+    report={"run":run,"status":"candidate_completed_not_promoted","base":MODEL,"revision":REVISION,"rank":8,"microbatch":microbatch,"trainable_parameters":sum(p.numel() for p in model.parameters() if p.requires_grad),"target_modules":targets,"manifest":manifest,"dev":evaluate("dev"),"test":evaluate("test"),"elapsed_seconds":time.monotonic()-started,"torch_version":torch.__version__,"triton_version":triton.__version__,"peft_version":peft.__version__,"transformers_version":transformers.__version__,"ollama":"Ollama-shaped single-question schema; chat template and media extension; import not verified","benchmark_status":"derived pilot diagnostics only; no external rank claim"}
     (root/"report.json").write_text(json.dumps(report,indent=2));output.commit();model_cache.commit();return report
 
 
